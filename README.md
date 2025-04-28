@@ -7,7 +7,7 @@ Cette infrastructure Docker permet d'instancier un projet web à l'aide de la su
 ### Clonage du projet
 
 Commencez par cloner les fichiers d'instance sur votre machine à l'aide de la commande ci-dessous
-```https://github.com/creativeeyestudio/hotel-ariane.git```
+```git clone https://github.com/creativeeyestudio/hotel-ariane.git```
 
 ---
 
