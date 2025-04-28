@@ -1,5 +1,5 @@
 # Étape de build à partir de l'image de dev
-FROM project-name-cms as builder
+FROM hotel-ariane-cms as builder
 
 # S'assurer d'être dans le bon dossier
 WORKDIR /opt/app
