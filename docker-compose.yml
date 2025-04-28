@@ -1,0 +1,73 @@
+name: ${PROJECT_NAME}
+
+services:
+  # FRONT DU PROJET
+  # -----------------------------------------------------------------
+  front:
+    image: kevinad/dreamsite-web-front:v3.0.0
+    container_name: ${PROJECT_NAME}-front # Nom de l'image
+    restart: always
+    ports:
+      - "3000:3000"  # Expose Next.js
+    environment:
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}  # URL de Strapi
+      - NEXT_PUBLIC_API_TOKEN=${NEXT_PUBLIC_API_TOKEN}
+    depends_on:
+      - cms  # Démarre après Strapi
+      - cms_db
+
+  # CONSOLE CMS
+  # -----------------------------------------------------------------
+  cms:
+    image: kevinad/dreamsite-cms:v3.0.2
+    container_name: ${PROJECT_NAME}-cms # Nom de l'image
+    restart: always
+    ports:
+      - "1337:1337"  # Expose Strapi
+    environment:
+      - DATABASE_CLIENT=mysql
+      - DATABASE_HOST=${DATABASE_HOST}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_USERNAME=${DATABASE_USERNAME}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - APP_KEYS=${APP_KEYS}
+      - API_TOKEN_SALT=${API_TOKEN_SALT}
+      - ADMIN_JWT_SECRET=${ADMIN_JWT_SECRET}
+      - TRANSFER_TOKEN_SALT=${TRANSFER_TOKEN_SALT}
+    depends_on:
+      - cms_db  # Démarre après MySQL
+
+  cms_db:
+    image: mysql:8.0
+    container_name: ${PROJECT_NAME}-db # Nom de l'image
+    restart: always
+    ports:
+      - "3306:3306"  # Expose MySQL
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${DATABASE_NAME}
+      - MYSQL_USER=${DATABASE_USERNAME}
+      - MYSQL_PASSWORD=${DATABASE_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql  # Persistance des données
+
+  # MAILDEV
+  # -----------------------------------------------------------------
+  maildev:
+    image: maildev/maildev
+    restart: always
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+    environment:
+      - TZ=Europe/France
+      - MAILDEV_WEB_PORT=1080
+      - MAILDEV_SMTP_PORT=1025
+
+volumes:
+  mysql_data:
+
+networks:
+  ${PROJECT_NAME}-network:
